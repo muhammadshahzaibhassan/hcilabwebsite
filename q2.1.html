@@ -1,0 +1,922 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CityCare Hospital - Patient Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-light: #dbeafe;
+      --primary-dark: #1d4ed8;
+      --secondary: #10b981;
+      --accent: #8b5cf6;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --text-muted: #94a3b8;
+      --border: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --radius: 12px;
+      --transition: all 0.2s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: var(--card);
+      border-right: 1px solid var(--border);
+      padding: 24px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      transition: var(--transition);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .brand-text {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 20px;
+    }
+
+    .user-card {
+      background: var(--primary-light);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    .user-info h3 {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .user-info p {
+      color: var(--text-light);
+      font-size: 14px;
+    }
+
+    .menu {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      flex-grow: 1;
+    }
+
+    .menu li {
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+      transition: var(--transition);
+    }
+
+    .menu li:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .menu li.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .menu .badge {
+      margin-left: auto;
+      background: var(--secondary);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      color: var(--text-light);
+      font-size: 14px;
+    }
+
+    /* Main Content */
+    .main {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .date-display {
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    .card {
+      background: var(--card);
+      padding: 24px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-top: 16px;
+    }
+
+    /* Appointments */
+    .appt-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--card);
+      transition: var(--transition);
+    }
+
+    .appt-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .appt-info h4 {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .appt-meta {
+      color: var(--text-light);
+      font-size: 14px;
+    }
+
+    .appt-status {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .status-upcoming {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .status-completed {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+
+    /* Doctor Card */
+    .doctor-card {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      padding: 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--card);
+      transition: var(--transition);
+    }
+
+    .doctor-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .doctor-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 20px;
+    }
+
+    .doctor-info h4 {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .doctor-spec {
+      color: var(--text-light);
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    /* Reports */
+    .report-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      border-radius: var(--radius);
+      border: 1px dashed var(--border);
+      background: var(--card);
+      transition: var(--transition);
+    }
+
+    .report-card:hover {
+      border-style: solid;
+      transform: translateY(-2px);
+    }
+
+    .report-info h4 {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .report-meta {
+      color: var(--text-light);
+      font-size: 14px;
+    }
+
+    /* Buttons */
+    .btn {
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 14px;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-secondary {
+      background: var(--secondary);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #0da271;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-outline:hover {
+      background: var(--bg);
+    }
+
+    .btn-icon {
+      padding: 8px;
+      border-radius: 8px;
+    }
+
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      padding: 20px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      color: var(--text-light);
+      font-size: 14px;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 1024px) {
+      .app {
+        flex-direction: column;
+      }
+      
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        padding: 16px;
+      }
+      
+      .menu {
+        display: flex;
+        overflow-x: auto;
+        padding-bottom: 8px;
+      }
+      
+      .menu li {
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .main {
+        padding: 16px;
+      }
+      
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* View Transitions */
+    .view {
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Loading Animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="Main navigation">
+      <div class="brand">
+        <div class="brand-icon">C</div>
+        <div class="brand-text">CityCare Hospital</div>
+      </div>
+      
+      <div class="user-card">
+        <div class="user-avatar">AD</div>
+        <div class="user-info">
+          <h3>Ahtisham Danish</h3>
+          <p>Patient ID: P-10234</p>
+        </div>
+      </div>
+
+      <nav>
+        <ul class="menu" id="menu">
+          <li data-view="dashboard" class="active">
+            <span>📅</span> Appointments <span class="badge" id="apptCount">3</span>
+          </li>
+          <li data-view="doctors">
+            <span>👩‍⚕</span> Doctors
+          </li>
+          <li data-view="reports">
+            <span>📄</span> Test Reports
+          </li>
+          <li data-view="medications">
+            <span>💊</span> Medications
+          </li>
+          <li data-view="settings">
+            <span>⚙</span> Settings
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">
+        <p>Need help? Call: 0300-555-0101</p>
+        <button class="btn btn-outline" id="logoutBtn" style="margin-top: 12px; width: 100%;">Logout</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="header">
+        <h1 class="page-title" id="pageTitle">Dashboard</h1>
+        <div class="date-display" id="todayDate"></div>
+      </div>
+
+      <section id="content">
+        <!-- Dashboard view (default) -->
+        <div id="dashboardView" class="view">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value" id="upcomingAppts">3</div>
+              <div class="stat-label">Upcoming Appointments</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="pendingReports">2</div>
+              <div class="stat-label">Pending Reports</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="activeMeds">5</div>
+              <div class="stat-label">Active Medications</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Next Appointment</h2>
+              <button class="btn btn-primary" id="viewAllApptBtn">View All</button>
+            </div>
+            <div class="appt-card">
+              <div class="appt-info">
+                <h4 id="nextApptDoc">Dr. Ahmed - Cardiology</h4>
+                <div class="appt-meta">
+                  <span id="nextApptDate">December 12, 2025</span> • 
+                  <span id="nextApptTime">3:00 PM</span>
+                </div>
+                <div class="appt-status status-upcoming">Upcoming</div>
+              </div>
+              <div>
+                <button class="btn btn-primary" id="viewApptBtn">View Details</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">Upcoming Appointments</h2>
+              </div>
+              <div id="apptList" style="display:grid;gap:12px"></div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">Primary Care Physician</h2>
+              </div>
+              <div class="doctor-card">
+                <div class="doctor-avatar">DA</div>
+                <div class="doctor-info">
+                  <h4 id="primaryDocName">Dr. Ahmed</h4>
+                  <div class="doctor-spec" id="primaryDocSpec">Cardiology • 10 years experience</div>
+                  <div style="margin-top: 12px; display: flex; gap: 8px;">
+                    <button class="btn btn-outline btn-icon" id="callDocBtn">📞</button>
+                    <button class="btn btn-outline btn-icon" id="messageDocBtn">✉️</button>
+                    <button class="btn btn-primary" id="bookApptBtn">Book Appointment</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Doctors view -->
+        <div id="doctorsView" class="view" style="display:none">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Our Medical Team</h2>
+              <div class="btn-group">
+                <button class="btn btn-outline" id="filterAllBtn">All</button>
+                <button class="btn btn-outline" id="filterCardioBtn">Cardiology</button>
+                <button class="btn btn-outline" id="filterDermBtn">Dermatology</button>
+              </div>
+            </div>
+            <div id="doctorsList" style="display:grid;gap:16px"></div>
+          </div>
+        </div>
+
+        <!-- Reports view -->
+        <div id="reportsView" class="view" style="display:none">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Medical Reports</h2>
+              <button class="btn btn-primary" id="requestReportBtn">Request New Report</button>
+            </div>
+            <div id="reportsList" style="display:grid;gap:12px"></div>
+          </div>
+        </div>
+
+        <!-- Medications view -->
+        <div id="medicationsView" class="view" style="display:none">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Current Medications</h2>
+              <button class="btn btn-primary" id="addMedicationBtn">Add Medication</button>
+            </div>
+            <div id="medicationsList" style="display:grid;gap:12px">
+              <div class="appt-card">
+                <div class="appt-info">
+                  <h4>Atorvastatin</h4>
+                  <div class="appt-meta">20mg • Once daily • For cholesterol</div>
+                  <div class="appt-status status-upcoming">Active</div>
+                </div>
+                <div>
+                  <button class="btn btn-outline">Refill</button>
+                </div>
+              </div>
+              <div class="appt-card">
+                <div class="appt-info">
+                  <h4>Metformin</h4>
+                  <div class="appt-meta">500mg • Twice daily • For diabetes</div>
+                  <div class="appt-status status-upcoming">Active</div>
+                </div>
+                <div>
+                  <button class="btn btn-outline">Refill</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Settings view -->
+        <div id="settingsView" class="view" style="display:none">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Account Settings</h2>
+            </div>
+            <div style="display:grid;gap:16px">
+              <div class="appt-card">
+                <div class="appt-info">
+                  <h4>Personal Information</h4>
+                  <div class="appt-meta">Update your contact details and personal information</div>
+                </div>
+                <div>
+                  <button class="btn btn-outline">Edit</button>
+                </div>
+              </div>
+              <div class="appt-card">
+                <div class="appt-info">
+                  <h4>Notification Preferences</h4>
+                  <div class="appt-meta">Manage how you receive alerts and reminders</div>
+                </div>
+                <div>
+                  <button class="btn btn-outline">Edit</button>
+                </div>
+              </div>
+              <div class="appt-card">
+                <div class="appt-info">
+                  <h4>Privacy & Security</h4>
+                  <div class="appt-meta">Control your data and account security</div>
+                </div>
+                <div>
+                  <button class="btn btn-outline">Edit</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Sample mock data (would normally come from server)
+    const appointments = [
+      {id:1,date:'2025-12-12',time:'15:00',doctor:'Dr. Ahmed',dept:'Cardiology',notes:'Follow-up for chest pain',status:'upcoming'},
+      {id:2,date:'2025-12-20',time:'09:30',doctor:'Dr. Sara',dept:'Dermatology',notes:'Skin rash review',status:'upcoming'},
+      {id:3,date:'2026-01-05',time:'11:00',doctor:'Dr. Omar',dept:'ENT',notes:'Hearing check',status:'upcoming'}
+    ];
+
+    const doctors = [
+      {id:1,name:'Dr. Ahmed',spec:'Cardiology',exp:'10 years',phone:'0300-111-222',availability:'Mon, Wed, Fri'},
+      {id:2,name:'Dr. Sara',spec:'Dermatology',exp:'5 years',phone:'0300-222-333',availability:'Tue, Thu'},
+      {id:3,name:'Dr. Omar',spec:'ENT',exp:'7 years',phone:'0300-333-444',availability:'Mon, Tue, Wed, Thu, Fri'}
+    ];
+
+    const reports = [
+      {id:1,title:'CBC Report',date:'2025-11-10',type:'pdf',content:'Complete Blood Count summary...',status:'completed'},
+      {id:2,title:'Chest X-Ray',date:'2025-10-25',type:'image',content:'X-Ray image data...',status:'completed'},
+      {id:3,title:'Blood Sugar',date:'2025-11-05',type:'pdf',content:'Fasting and random sugar values...',status:'pending'}
+    ];
+
+    // Simple UI logic
+    const views = ['dashboard','doctors','reports','medications','settings'];
+    const menu = document.getElementById('menu');
+    const apptCount = document.getElementById('apptCount');
+    apptCount.textContent = appointments.length;
+
+    function showView(view){
+      // set active menu
+      [...menu.querySelectorAll('li')].forEach(li=>li.classList.toggle('active', li.dataset.view===view));
+      // title
+      const titleMap = {
+        dashboard:'Dashboard',
+        doctors:'Doctor Information',
+        reports:'Test Reports',
+        medications:'Medications',
+        settings:'Settings'
+      };
+      document.getElementById('pageTitle').textContent = titleMap[view]||'';
+      // hide all views
+      views.forEach(v=>document.getElementById(v + 'View').style.display = 'none');
+      document.getElementById(view + 'View').style.display = 'block';
+    }
+
+    // menu click
+    menu.addEventListener('click', e=>{
+      const li = e.target.closest('li'); if(!li) return;
+      showView(li.dataset.view);
+    });
+
+    // render dashboard next appt
+    function renderNextAppt(){
+      const next = appointments[0];
+      if(!next) return;
+      
+      document.getElementById('nextApptDate').textContent = formatDate(next.date);
+      document.getElementById('nextApptTime').textContent = next.time;
+      document.getElementById('nextApptDoc').textContent = `${next.doctor} - ${next.dept}`;
+
+      const apptList = document.getElementById('apptList'); 
+      apptList.innerHTML='';
+      
+      appointments.forEach(a=>{
+        const row=document.createElement('div'); 
+        row.className='appt-card';
+        row.innerHTML = `
+          <div class="appt-info">
+            <h4>${a.doctor}</h4>
+            <div class="appt-meta">${formatDate(a.date)} • ${a.time} • ${a.dept}</div>
+            <div class="appt-status status-${a.status}">${a.status.charAt(0).toUpperCase() + a.status.slice(1)}</div>
+          </div>
+          <div>
+            <button class='btn btn-outline' data-id='${a.id}'>Details</button>
+          </div>`;
+        apptList.appendChild(row);
+      });
+
+      // quick doc
+      const d = doctors[0];
+      document.getElementById('primaryDocName').textContent = d.name;
+      document.getElementById('primaryDocSpec').textContent = `${d.spec} • ${d.exp} experience`;
+    }
+
+    // render doctors
+    function renderDoctors(){
+      const cont = document.getElementById('doctorsList'); 
+      cont.innerHTML='';
+      
+      doctors.forEach(d=>{
+        const el=document.createElement('div'); 
+        el.className='doctor-card';
+        el.innerHTML = `
+          <div class="doctor-avatar">${d.name.split(' ').map(n => n[0]).join('')}</div>
+          <div class="doctor-info">
+            <h4>${d.name}</h4>
+            <div class="doctor-spec">${d.spec} • ${d.exp}</div>
+            <div class="appt-meta">Availability: ${d.availability}</div>
+            <div style="margin-top: 12px; display: flex; gap: 8px;">
+              <button class="btn btn-outline btn-icon" data-phone="${d.phone}">📞</button>
+              <button class="btn btn-outline btn-icon">✉️</button>
+              <button class="btn btn-primary" data-id="${d.id}">Book Appointment</button>
+            </div>
+          </div>`;
+        cont.appendChild(el);
+      });
+    }
+
+    // render reports
+    function renderReports(){
+      const cont = document.getElementById('reportsList'); 
+      cont.innerHTML='';
+      
+      reports.forEach(r=>{
+        const statusClass = r.status === 'completed' ? 'status-completed' : 'status-upcoming';
+        const statusText = r.status === 'completed' ? 'Completed' : 'Pending';
+        
+        const el=document.createElement('div'); 
+        el.className='report-card';
+        el.innerHTML = `
+          <div class="report-info">
+            <h4>${r.title}</h4>
+            <div class="report-meta">${formatDate(r.date)} • ${r.type.toUpperCase()}</div>
+            <div class="appt-status ${statusClass}">${statusText}</div>
+          </div>
+          <div style='display:flex;gap:8px'>
+            <button class='btn btn-outline' data-view='${r.id}'>View</button>
+            <button class='btn btn-primary' data-download='${r.id}'>Download</button>
+          </div>`;
+        cont.appendChild(el);
+      });
+    }
+
+    // format date for display
+    function formatDate(dateString) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString(undefined, options);
+    }
+
+    // simulate report download
+    function downloadReport(id){
+      const r = reports.find(x=>x.id==id); 
+      if(!r) return;
+      
+      const blob = new Blob([r.content], {type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); 
+      a.href=url; 
+      a.download = r.title.replace(/\s+/g,'_') + '.txt';
+      document.body.appendChild(a); 
+      a.click(); 
+      a.remove(); 
+      URL.revokeObjectURL(url);
+    }
+
+    // event delegation for content area
+    document.getElementById('content').addEventListener('click', e=>{
+      const btn = e.target.closest('button'); 
+      if(!btn) return;
+      
+      if(btn.dataset.view){ // view report
+        const id = btn.dataset.view; 
+        const r = reports.find(x=>x.id==id);
+        alert(`${r.title}\n\nDate: ${r.date}\n\nPreview:\n${r.content}`);
+      }
+      
+      if(btn.dataset.download){ 
+        downloadReport(btn.dataset.download); 
+      }
+      
+      if(btn.dataset.id){ 
+        const a = appointments.find(x=>x.id==btn.dataset.id); 
+        alert(`Appointment Details:\nDoctor: ${a.doctor}\nDate: ${a.date} ${a.time}\nNotes: ${a.notes}`); 
+      }
+      
+      if(btn.id==='viewApptBtn'){ 
+        showView('dashboard'); 
+        alert('Showing next appointment details in the dashboard'); 
+      }
+      
+      if(btn.id==='contactDocBtn'){ 
+        alert('Calling ' + doctors[0].phone); 
+      }
+      
+      if(btn.id==='callDocBtn') {
+        alert('Calling ' + doctors[0].phone);
+      }
+      
+      if(btn.id==='messageDocBtn') {
+        alert('Opening messaging interface for ' + doctors[0].name);
+      }
+      
+      if(btn.id==='bookApptBtn') {
+        alert('Opening appointment booking for ' + doctors[0].name);
+      }
+      
+      if(btn.id==='viewAllApptBtn') {
+        showView('dashboard');
+        document.getElementById('apptList').scrollIntoView({behavior: 'smooth'});
+      }
+      
+      if(btn.id==='requestReportBtn') {
+        alert('Requesting a new medical report');
+      }
+      
+      if(btn.id==='addMedicationBtn') {
+        alert('Adding a new medication to your list');
+      }
+      
+      if(btn.dataset.phone) {
+        alert('Calling ' + btn.dataset.phone);
+      }
+    });
+
+    // logout
+    document.getElementById('logoutBtn').addEventListener('click', ()=>{
+      document.querySelector('.app').style.opacity = '0.7';
+      setTimeout(() => alert('Logged out successfully'), 300);
+    });
+
+    // initial render
+    document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-US', { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+    
+    // Update stats
+    document.getElementById('upcomingAppts').textContent = appointments.length;
+    document.getElementById('pendingReports').textContent = reports.filter(r => r.status === 'pending').length;
+    document.getElementById('activeMeds').textContent = 5; // Hardcoded for demo
+    
+    renderNextAppt(); 
+    renderDoctors(); 
+    renderReports();
+  </script>
+</body>
+</html>
